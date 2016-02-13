@@ -1,21 +1,55 @@
-import sys
-from PyQt4 import QtGui, QtCore
-from PyQt4.QtCore import Qt
+#very basic text editor
+#python built in tkinter module
 
-class Main( QtGui.QMainWindow ) :
-    def __init__( self , parent = None ) :
-        QtGui.QMainWindow.__init__( self , parent )
-        self.initUI( )
+from Tkinter import *
+from tkFileDialog import *
 
-    def initUI( self ) :
-        self.setGeometry( 100, 100, 1030 , 800 )
-        self.setWindowTitle( "writer")
+fileName = "Default"
 
-def main( ) :
-    app = QtGui.QApplication( sys.argv )
-    main = Main( )
-    main.show( )
-    sys.exit( app.exec_( ) )
+def newFile( ) :
+    global fileName
+    fileName = "untitled"
+    text.delete( 0.0 , END )
 
-if __name__ == "__main__" :
-    main( )
+def saveFile( ) :
+    global fileName
+    t = text.get( 0.0, END )
+    f = open( fileName, "w" )
+    f.write( t )
+    f.close( )
+
+def saveAs( ) :
+    f = asksaveasfile( mode = 'w' , defaultextension = '.txt' )
+    t = text.get( 0.0 , END )
+    try :
+        f.write( t.rstrip( ) )
+    except :
+        showerror( title = "oops!" , message = "unable to save file .. " )
+
+def openFile( ) :
+    f = askopenfile( mode = 'r' )
+    t = f.read( )
+    text.delete( 0.0 , END )
+    text.insert( 0.0 , t )
+
+root = Tk( )
+root.title( "My python text editor" )
+root.minsize( width = 400 , height = 400 )
+root.maxsize( width = 400 , height = 400 )
+
+text = Text( root , width = 400 , height = 400 )
+text.pack( )
+
+menubar = Menu( root )
+filemenu = Menu( menubar )
+
+filemenu.add_command( label = "New" , command = newFile )
+filemenu.add_command( label = "Open" , command = openFile )
+filemenu.add_command( label = "Save" , command = saveFile )
+filemenu.add_command( label = "Save as" , command = saveAs )
+filemenu.add_separator( )
+filemenu.add_command( label = "Quit" , command = root.quit )
+menubar.add_cascade( label = "File" , menu = filemenu )
+
+root.config( menu = menubar )
+root.mainloop( )
